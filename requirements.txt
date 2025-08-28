@@ -1,0 +1,16 @@
+streamlit==1.48.1
+streamlit-option-menu==0.4.0
+streamlit-tags==1.2.8
+
+pandas==2.3.2
+numpy==1.26.4
+shapely==2.1.1
+tqdm==4.67.1
+
+chromadb==1.0.20
+langchain==0.3.27
+langchain-chroma==0.2.5
+langchain-huggingface==0.3.1
+
+torch==2.8.0
+ollama==0.5.3

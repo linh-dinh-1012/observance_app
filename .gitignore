@@ -1,0 +1,27 @@
+# ==========================
+# Ignore data & heavy files
+# ==========================
+chroma_store/
+data/
+database/observance.db
+*.zip
+*.csv
+*.db
+
+# ==========================
+# Python cache & virtual env
+# ==========================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints/
+.venv/
+venv/
+env/
+
+# ==========================
+# OS / Editor specific
+# ==========================
+.DS_Store
+Thumbs.db
