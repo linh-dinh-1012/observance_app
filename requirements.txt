@@ -10,7 +10,7 @@ tqdm==4.66.5
 chromadb==0.5.3
 langchain==0.3.0
 langchain-chroma==0.1.4
-langchain-huggingface==0.0.7
+langchain-huggingface
 
 torch==2.3.1
 transformers==4.44.2
