@@ -1,16 +1,18 @@
-streamlit==1.48.1
+streamlit==1.38.0
 streamlit-option-menu==0.4.0
 streamlit-tags==1.2.8
 
-pandas==2.3.2
+pandas==2.2.2
 numpy==1.26.4
 shapely==2.1.1
-tqdm==4.67.1
+tqdm==4.66.5
 
 chromadb==1.0.20
-langchain==0.3.27
-langchain-chroma==0.2.5
-langchain-huggingface==0.3.1
+langchain==0.3.0
+langchain-chroma==0.1.4
+langchain-huggingface==0.0.7
 
-torch==2.8.0
-ollama==0.5.3
+torch==2.3.1
+transformers==4.44.2
+sentence-transformers==3.0.1
+ollama==0.1.9
