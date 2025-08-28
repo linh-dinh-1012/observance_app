@@ -1,4 +1,5 @@
 import streamlit as st
+import time
 import sqlite3
 import pandas as pd
 import os, requests, zipfile 
@@ -102,28 +103,51 @@ DB_PATH = BASE_DIR / "database.db"   # downloaded DB will be saved here
 CHROMA_PATH = BASE_DIR / "chroma_store"  # extracted Chroma store folder
 
 @st.cache_resource
+@st.cache_resource
 def setup_data():
-    """Download database + chroma_store from Seafile if not already available."""
+    """Ensure database + Chroma store are available locally.
+    If not found, download from Seafile (direct download link).
+    Show progress bar + size + time in Streamlit.
+    """
 
-    # ---- Download database ----
+    def download_with_progress(url, out_path, label):
+        """Download file with progress bar and return size + time"""
+        st.info(f"⬇️ Downloading {label}...")
+        t0 = time.time()
+        r = requests.get(url, stream=True)
+        r.raise_for_status()
+        total_size = int(r.headers.get("content-length", 0))
+        block_size = 1024 * 1024  # 1 MB
+        progress_bar = st.progress(0, text=f"Downloading {label}...")
+        size_dl = 0
+        with open(out_path, "wb") as f:
+            for data in r.iter_content(block_size):
+                f.write(data)
+                size_dl += len(data)
+                if total_size:
+                    progress = min(size_dl / total_size, 1.0)
+                    progress_bar.progress(progress, text=f"{label} {progress*100:.1f}%")
+        dt = time.time() - t0
+        size_mb = size_dl / (1024 * 1024)
+        progress_bar.empty()
+        st.success(f"{label} downloaded ✅ ({size_mb:.1f} MB in {dt:.1f}s)")
+
+    # ---- Ensure database ----
     if not DB_PATH.exists():
-        st.info("⬇️ Downloading database...")
-        os.makedirs(BASE_DIR, exist_ok=True)
-        r = requests.get(DB_URL)
-        with open(DB_PATH, "wb") as f:
-            f.write(r.content)
+        os.makedirs(DB_PATH.parent, exist_ok=True)
+        download_with_progress(DB_URL, DB_PATH, "Database")
 
-    # ---- Download and unzip Chroma ----
+    # ---- Ensure Chroma store ----
     if not CHROMA_PATH.exists():
-        st.info("⬇️ Downloading Chroma store...")
-        r = requests.get(CHROMA_URL)
+        os.makedirs(CHROMA_PATH.parent, exist_ok=True)
         zip_path = BASE_DIR / "chroma_store.zip"
-        with open(zip_path, "wb") as f:
-            f.write(r.content)
+        download_with_progress(CHROMA_URL, zip_path, "Chroma store (zip)")
+        st.info("Extracting Chroma store...")
         with zipfile.ZipFile(zip_path, "r") as zip_ref:
             zip_ref.extractall(CHROMA_PATH)
+        st.success("Chroma store extracted ✅")
 
-    # ---- Return database connection + Chroma client ----
+    # ---- Return DB connection + Chroma client ----
     conn = sqlite3.connect(DB_PATH)
     client = PersistentClient(path=str(CHROMA_PATH))
     return conn, client
