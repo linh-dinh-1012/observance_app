@@ -7,10 +7,10 @@ numpy==1.26.4
 shapely==2.1.1
 tqdm==4.66.5
 
-chromadb==0.5.3
+chromadb>=1.0.9,<1.1.0
 langchain==0.3.0
-langchain-chroma==0.1.4
-langchain-huggingface==0.0.9
+langchain-community==0.3.29
+langchain-chroma==0.2.5
 
 torch
 transformers==4.44.2
