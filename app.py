@@ -11,6 +11,7 @@ from pathlib import Path
 from streamlit_option_menu import option_menu # type: ignore
 from streamlit_tags import st_tags # type: ignore
 from scripts.rag import search_docs, generate_answer_stream  # Import RAG function
+from google.cloud import storage
 
 # =========================================================
 # THEME & UI HELPERS
@@ -92,8 +93,15 @@ def card_close():
 # =========================================================
 # CONFIG: Links to Seafile data
 # =========================================================
-DB_URL = "https://seafile.agroparistech.fr/seafhttp/f/8dcbc28bbe8f441090a2/?op=view"
-CHROMA_URL = "https://seafile.agroparistech.fr/seafhttp/f/014807ad29f34fbe9128/?op=view"
+
+# DB_URL = "https://seafile.agroparistech.fr/seafhttp/f/8dcbc28bbe8f441090a2/?op=view"
+# CHROMA_URL = "https://seafile.agroparistech.fr/seafhttp/f/014807ad29f34fbe9128/?op=view"
+
+
+# Google Cloud Storage bucket name
+BUCKET_NAME = "observance-app-2025"
+DB_BLOB = "database/observance.db"
+CHROMA_BLOB = "chroma_store.zip"
 
 # =========================================================
 # DATABASE
@@ -102,46 +110,37 @@ BASE_DIR = Path(__file__).resolve().parent
 DB_PATH = BASE_DIR / "database.db"   # downloaded DB will be saved here
 CHROMA_PATH = BASE_DIR / "chroma_store"  # extracted Chroma store folder
 
-@st.cache_resource
+
+def download_from_gcs(bucket_name, blob_name, out_path, label):
+    """Download a file from GCS to local path with progress info in Streamlit"""
+    st.info(f"⬇️ Downloading {label} from GCS...")
+    t0 = time.time()
+
+    client = storage.Client()
+    bucket = client.bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    blob.download_to_filename(str(out_path))
+
+    size_mb = out_path.stat().st_size / (1024 * 1024)
+    dt = time.time() - t0
+    st.success(f"{label} downloaded ✅ ({size_mb:.1f} MB in {dt:.1f}s)")
+
+
 @st.cache_resource
 def setup_data():
     """Ensure database + Chroma store are available locally.
-    If not found, download from Seafile (direct download link).
-    Show progress bar + size + time in Streamlit.
+    If not found, download from GCS.
     """
-
-    def download_with_progress(url, out_path, label):
-        """Download file with progress bar and return size + time"""
-        st.info(f"⬇️ Downloading {label}...")
-        t0 = time.time()
-        r = requests.get(url, stream=True)
-        r.raise_for_status()
-        total_size = int(r.headers.get("content-length", 0))
-        block_size = 1024 * 1024  # 1 MB
-        progress_bar = st.progress(0, text=f"Downloading {label}...")
-        size_dl = 0
-        with open(out_path, "wb") as f:
-            for data in r.iter_content(block_size):
-                f.write(data)
-                size_dl += len(data)
-                if total_size:
-                    progress = min(size_dl / total_size, 1.0)
-                    progress_bar.progress(progress, text=f"{label} {progress*100:.1f}%")
-        dt = time.time() - t0
-        size_mb = size_dl / (1024 * 1024)
-        progress_bar.empty()
-        st.success(f"{label} downloaded ✅ ({size_mb:.1f} MB in {dt:.1f}s)")
-
     # ---- Ensure database ----
     if not DB_PATH.exists():
-        os.makedirs(DB_PATH.parent, exist_ok=True)
-        download_with_progress(DB_URL, DB_PATH, "Database")
+        download_from_gcs(BUCKET_NAME, DB_BLOB, DB_PATH, "Database")
 
     # ---- Ensure Chroma store ----
     if not CHROMA_PATH.exists():
-        os.makedirs(CHROMA_PATH.parent, exist_ok=True)
         zip_path = BASE_DIR / "chroma_store.zip"
-        download_with_progress(CHROMA_URL, zip_path, "Chroma store (zip)")
+        download_from_gcs(BUCKET_NAME, CHROMA_BLOB, zip_path, "Chroma store (zip)")
         st.info("Extracting Chroma store...")
         with zipfile.ZipFile(zip_path, "r") as zip_ref:
             zip_ref.extractall(CHROMA_PATH)
@@ -151,6 +150,55 @@ def setup_data():
     conn = sqlite3.connect(DB_PATH)
     client = PersistentClient(path=str(CHROMA_PATH))
     return conn, client
+
+# @st.cache_resource
+# def setup_data():
+#     """Ensure database + Chroma store are available locally.
+#     If not found, download from Seafile (direct download link).
+#     Show progress bar + size + time in Streamlit.
+#     """
+
+#     def download_with_progress(url, out_path, label):
+#         """Download file with progress bar and return size + time"""
+#         st.info(f"⬇️ Downloading {label}...")
+#         t0 = time.time()
+#         r = requests.get(url, stream=True)
+#         r.raise_for_status()
+#         total_size = int(r.headers.get("content-length", 0))
+#         block_size = 1024 * 1024  # 1 MB
+#         progress_bar = st.progress(0, text=f"Downloading {label}...")
+#         size_dl = 0
+#         with open(out_path, "wb") as f:
+#             for data in r.iter_content(block_size):
+#                 f.write(data)
+#                 size_dl += len(data)
+#                 if total_size:
+#                     progress = min(size_dl / total_size, 1.0)
+#                     progress_bar.progress(progress, text=f"{label} {progress*100:.1f}%")
+#         dt = time.time() - t0
+#         size_mb = size_dl / (1024 * 1024)
+#         progress_bar.empty()
+#         st.success(f"{label} downloaded ✅ ({size_mb:.1f} MB in {dt:.1f}s)")
+
+#     # ---- Ensure database ----
+#     if not DB_PATH.exists():
+#         os.makedirs(DB_PATH.parent, exist_ok=True)
+#         download_with_progress(DB_URL, DB_PATH, "Database")
+
+#     # ---- Ensure Chroma store ----
+#     if not CHROMA_PATH.exists():
+#         os.makedirs(CHROMA_PATH.parent, exist_ok=True)
+#         zip_path = BASE_DIR / "chroma_store.zip"
+#         download_with_progress(CHROMA_URL, zip_path, "Chroma store (zip)")
+#         st.info("Extracting Chroma store...")
+#         with zipfile.ZipFile(zip_path, "r") as zip_ref:
+#             zip_ref.extractall(CHROMA_PATH)
+#         st.success("Chroma store extracted ✅")
+
+#     # ---- Return DB connection + Chroma client ----
+#     conn = sqlite3.connect(DB_PATH)
+#     client = PersistentClient(path=str(CHROMA_PATH))
+#     return conn, client
 
 def run_query(query, params=()):
     """Execute a read-only SQL query and return a pandas DataFrame."""

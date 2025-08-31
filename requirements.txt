@@ -7,13 +7,17 @@ numpy
 shapely
 tqdm
 
+plotly
+
+torch
 chromadb
 langchain
 langchain-community
 langchain-chroma
 langchain-huggingface
 
-torch
 transformers
 sentence-transformers
 ollama
+
+google-cloud-storage

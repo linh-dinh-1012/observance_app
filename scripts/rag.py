@@ -6,7 +6,8 @@ from pathlib import Path
 
 # Vector DB & embeddings
 from langchain_chroma import Chroma
-from langchain_huggingface import HuggingFaceEmbeddings
+#from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain.schema import Document
 
 # LLM via Ollama
