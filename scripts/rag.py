@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import List, Optional
 import streamlit as st
 from pathlib import Path
+import os
 
 # Vector DB & embeddings
 from langchain_chroma import Chroma
@@ -19,7 +20,10 @@ PERSIST_DIR  = str(BASE_DIR / "chroma_store")
 COLLECTION   = "gouvernance"
 EMB_MODEL    = "intfloat/multilingual-e5-base"
 OLLAMA_MODEL = "llama3.2:3b"
+OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+ollama_client = ollama.Client(host=OLLAMA_HOST)
 CTX_TOKENS   = 1024
+
 
 # ---------- Embeddings ----------
 try:
@@ -104,7 +108,7 @@ Contexte :
 Réponse (courte) :
 """
 
-    resp = ollama.chat(
+    resp = ollama_client.chat(
         model=OLLAMA_MODEL,
         messages=[{"role": "user", "content": prompt}],
         options={
@@ -187,7 +191,7 @@ Answer:
     full_answer = ""
 
     # Stream response from Ollama
-    for chunk in ollama.chat(
+    for chunk in ollama_client.chat(
         model=OLLAMA_MODEL,
         messages=[{"role": "user", "content": prompt}],
         options={
@@ -204,9 +208,9 @@ Answer:
     return full_answer
 
 if __name__ == "__main__":
-    print("Kiểm tra số lượng documents trong collection...")
+    print("Vérifiez le nombre de documents dans la collection...")
     try:
         stats = vectorstore._collection.count()
-        print("Số lượng documents trong Chroma:", stats)
+        print("Nombre de documents dans Chroma:", stats)
     except Exception as e:
-        print("Lỗi khi truy vấn collection:", e)
+        print("Erreur lors de l'interrogation de la collection:", e)
