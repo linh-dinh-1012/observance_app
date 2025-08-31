@@ -12,6 +12,7 @@ from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain.schema import Document
 
 # LLM via Ollama
+import ollama
 from ollama import Client
 
 # ---------- Config ----------

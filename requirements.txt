@@ -3,7 +3,7 @@ streamlit-option-menu
 streamlit-tags
 
 pandas
-numpy<2.0
+numpy==1.26.4
 shapely
 tqdm
 
