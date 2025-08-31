@@ -20,7 +20,7 @@ PERSIST_DIR  = str(BASE_DIR / "chroma_store")
 COLLECTION   = "gouvernance"
 EMB_MODEL    = "intfloat/multilingual-e5-base"
 OLLAMA_MODEL = "llama3.2:3b"
-OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://ollama:11434")
 ollama_client = ollama.Client(host=OLLAMA_HOST)
 CTX_TOKENS   = 1024
 
