@@ -12,7 +12,7 @@ from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain.schema import Document
 
 # LLM via Ollama
-import ollama
+from ollama import Client
 
 # ---------- Config ----------
 BASE_DIR     = Path(__file__).resolve().parent.parent   
@@ -21,7 +21,7 @@ COLLECTION   = "gouvernance"
 EMB_MODEL    = "intfloat/multilingual-e5-base"
 OLLAMA_MODEL = "llama3.2:3b"
 OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://ollama:11434")
-ollama_client = ollama.Client(host=OLLAMA_HOST)
+ollama_client = Client(host=OLLAMA_HOST)
 CTX_TOKENS   = 1024
 
 
