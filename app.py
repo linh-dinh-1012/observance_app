@@ -10,6 +10,7 @@ from shapely.geometry import mapping
 from pathlib import Path
 from streamlit_option_menu import option_menu # type: ignore
 from streamlit_tags import st_tags # type: ignore
+import streamlit.components.v1 as components
 from scripts.rag import search_docs, generate_answer_stream  # Import RAG function
 from google.cloud import storage
 
@@ -125,7 +126,7 @@ def download_from_gcs(bucket_name, blob_name, out_path, label):
 
     size_mb = out_path.stat().st_size / (1024 * 1024)
     dt = time.time() - t0
-    st.success(f"{label} downloaded ✅ ({size_mb:.1f} MB in {dt:.1f}s)")
+    st.success(f"{label} downloaded ({size_mb:.1f} MB in {dt:.1f}s)")
 
 
 @st.cache_resource
@@ -144,61 +145,13 @@ def setup_data():
         st.info("Extracting Chroma store...")
         with zipfile.ZipFile(zip_path, "r") as zip_ref:
             zip_ref.extractall(CHROMA_PATH)
-        st.success("Chroma store extracted ✅")
+        st.success("Chroma store extracted")
 
     # ---- Return DB connection + Chroma client ----
     conn = sqlite3.connect(DB_PATH)
     client = PersistentClient(path=str(CHROMA_PATH))
     return conn, client
 
-# @st.cache_resource
-# def setup_data():
-#     """Ensure database + Chroma store are available locally.
-#     If not found, download from Seafile (direct download link).
-#     Show progress bar + size + time in Streamlit.
-#     """
-
-#     def download_with_progress(url, out_path, label):
-#         """Download file with progress bar and return size + time"""
-#         st.info(f"⬇️ Downloading {label}...")
-#         t0 = time.time()
-#         r = requests.get(url, stream=True)
-#         r.raise_for_status()
-#         total_size = int(r.headers.get("content-length", 0))
-#         block_size = 1024 * 1024  # 1 MB
-#         progress_bar = st.progress(0, text=f"Downloading {label}...")
-#         size_dl = 0
-#         with open(out_path, "wb") as f:
-#             for data in r.iter_content(block_size):
-#                 f.write(data)
-#                 size_dl += len(data)
-#                 if total_size:
-#                     progress = min(size_dl / total_size, 1.0)
-#                     progress_bar.progress(progress, text=f"{label} {progress*100:.1f}%")
-#         dt = time.time() - t0
-#         size_mb = size_dl / (1024 * 1024)
-#         progress_bar.empty()
-#         st.success(f"{label} downloaded ✅ ({size_mb:.1f} MB in {dt:.1f}s)")
-
-#     # ---- Ensure database ----
-#     if not DB_PATH.exists():
-#         os.makedirs(DB_PATH.parent, exist_ok=True)
-#         download_with_progress(DB_URL, DB_PATH, "Database")
-
-#     # ---- Ensure Chroma store ----
-#     if not CHROMA_PATH.exists():
-#         os.makedirs(CHROMA_PATH.parent, exist_ok=True)
-#         zip_path = BASE_DIR / "chroma_store.zip"
-#         download_with_progress(CHROMA_URL, zip_path, "Chroma store (zip)")
-#         st.info("Extracting Chroma store...")
-#         with zipfile.ZipFile(zip_path, "r") as zip_ref:
-#             zip_ref.extractall(CHROMA_PATH)
-#         st.success("Chroma store extracted ✅")
-
-#     # ---- Return DB connection + Chroma client ----
-#     conn = sqlite3.connect(DB_PATH)
-#     client = PersistentClient(path=str(CHROMA_PATH))
-#     return conn, client
 
 def run_query(query, params=()):
     """Execute a read-only SQL query and return a pandas DataFrame."""
@@ -209,8 +162,75 @@ def run_query(query, params=()):
         conn.close()
     return df
 
+
 # =========================================================
-# TAB 1: Dashboard
+# TAB 1: Hero page
+# =========================================================
+def home():
+    st.markdown("""
+    <style>
+    .hero {
+        text-align: center;
+        padding: 3rem 1rem 2rem;
+        background: linear-gradient(180deg, #f5fdf9 0%, #ffffff 100%);
+        border-radius: 18px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+    }
+    .hero h1 {
+        color: #0f4336;
+        font-size: 2.3rem;
+        font-weight: 800;
+        margin-bottom: 0.6rem;
+    }
+    .hero p {
+        font-size: 1.1rem;
+        color: #374151;
+        max-width: 700px;
+        margin: 0 auto 1.5rem;
+    }
+    .badges {
+        display: flex;
+        justify-content: center;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+        margin-top: 1.5rem;
+    }
+    .badge {
+        background: #e6fffa;
+        color: #065f46;
+        padding: 0.4rem 0.8rem;
+        border-radius: 999px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        border: 1px solid #a7f3d0;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="hero">
+        <h1>🌿 Projet OBSERVANCE</h1>
+        <p>
+        Une plateforme d’analyse et de visualisation des avis de l’Autorité environnementale (Ae),
+        développée à AgroParisTech dans le cadre du Certificat IODAA – Data Science & Durabilité.
+        </p>
+        <div class="badges">
+            <div class="badge">Data Science</div>
+            <div class="badge">IA & RAG</div>
+            <div class="badge">Open Data</div>
+            <div class="badge">Gouvernance environnementale</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # --- CTA buttons ---
+    st.markdown("### 🚀 Explorer les données")
+    st.markdown("Cliquez sur **📊 Explorer** dans le menu à gauche pour accéder aux visualisations interactives.")
+    st.image("assets/preview_dashboard.png", use_column_width=True)
+
+
+# =========================================================
+# TAB 2: Dashboard
 # =========================================================
 def dashboard():
     st.markdown("## Tableau de bord")
@@ -370,7 +390,7 @@ def dashboard():
     card_close()
 
 # =========================================================
-# TAB 2: Search & Analyse
+# TAB 3: Search & Analyse
 # =========================================================
 @st.cache_data
 def get_distinct(table: str, col: str, where: str = "1=1") -> list[str]:
@@ -424,7 +444,7 @@ def recherche_analyse():
 
         keywords = st_tags(
             label="Mots-clés",
-            text="Entrez un mot-clé et appuyez sur Enter",
+            text="Entrez un mot-clé",
             value=[],
             suggestions=sorted(set(titres + dates_avis + departements)),
             maxtags=5,
@@ -652,30 +672,48 @@ def recherche_analyse():
         st.write(str(st.session_state[answer_key]))
 
 # =========================================================
-# TAB 3: Documentation
+# TAB 4: Documentation
 # =========================================================
 def documentation():
-    st.markdown("## Documentation / Aide")
-    card_open("Observance App")
+    st.markdown("## 📘 Présentation du projet OBSERVANCE")
+
     st.markdown("""
-    Cette application permet :
-    - Visualisation des rapports environnementaux sous forme de tableau de bord
-    - Recherche et analyse
-    - Analyse critique des projets
+    **OBSERVANCE** est une plateforme d’analyse des avis de l’Autorité environnementale (Ae).  
+    Elle explore comment ces avis sont pris en compte dans les évaluations d’impact environnemental.
     """)
-    st.markdown("**Autrice:** Linh ĐINH  \n**Version:** 1.0")
+
+    st.info("👇 Présentation complète (Canva) intégrée ci-dessous :")
+
+    # Embed Canva
+    components.iframe(
+        "https://www.canva.com/design/DAGyXlGTcrQ/view?embed",
+        height=500, width=900, scrolling=True
+    )
+    st.markdown("""
+    ---
+    **Autrice :** Linh ĐINH  
+    **Encadrement :** Cécile Blatrix & Vincent Guigue – Département SESG, AgroParisTech  
+    **Version :** 1.0
+    """)
+
     card_close()
+
 
 # =========================================================
 # MAIN APP (Sidebar navigation with option_menu)
 # =========================================================
-st.set_page_config(page_title="Observance", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="Observance",
+                   page_icon="assets/flavicon.png", 
+                   layout="wide", 
+                   initial_sidebar_state="expanded")
 inject_css()
 
 # --- Setup data (download DB + Chroma from Seafile) ---
 conn, client = setup_data()
 
 with st.sidebar:
+    st.sidebar.image("assets/logo_observance.png", use_column_width=True)
+    st.sidebar.markdown("<br>", unsafe_allow_html=True)
     st.markdown("### OBSERVANCE")
     choice = option_menu(
         menu_title=None,

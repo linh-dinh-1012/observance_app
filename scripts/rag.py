@@ -20,11 +20,10 @@ BASE_DIR     = Path(__file__).resolve().parent.parent
 PERSIST_DIR  = str(BASE_DIR / "chroma_store")           
 COLLECTION   = "gouvernance"
 EMB_MODEL    = "intfloat/multilingual-e5-base"
-OLLAMA_MODEL = "llama3.2:3b"
+OLLAMA_MODEL = "llama3.2:1b"
 OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://ollama:11434")
 ollama_client = Client(host=OLLAMA_HOST)
 CTX_TOKENS   = 1024
-
 
 # ---------- Embeddings ----------
 try:
