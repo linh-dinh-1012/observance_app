@@ -3,6 +3,8 @@ import time
 import sqlite3
 import pandas as pd
 import os, requests, zipfile 
+import base64
+from pathlib import Path
 from chromadb import PersistentClient
 import plotly.express as px
 from shapely import wkt
@@ -164,69 +166,123 @@ def run_query(query, params=()):
 
 
 # =========================================================
-# TAB 1: Hero page
+# TAB 1: Page d'accueil
 # =========================================================
 def home():
+    base_dir = Path(__file__).resolve().parent
+    logo_path = base_dir / "assets" / "logo_observance.png"
+
+    if logo_path.exists():
+        with open(logo_path, "rb") as f:
+            logo_base64 = base64.b64encode(f.read()).decode()
+        logo_src = f"data:image/png;base64,{logo_base64}"
+    else:
+        logo_src = ""
+
     st.markdown("""
+        <style>
+        [data-testid="stSidebar"] {display: none;}
+        .block-container {padding: 0; margin: 0; max-width: 100%;}
+        html, body {height: 100%; margin: 0;}
+        </style>
+    """, unsafe_allow_html=True)
+
+    # CSS hero section
+    st.markdown(f"""
     <style>
-    .hero {
+    @keyframes slideInLeft {{
+        0% {{opacity: 0; transform: translateX(-50px);}}
+        100% {{opacity: 1; transform: translateX(0);}}
+    }}
+    @keyframes slideInRight {{
+        0% {{opacity: 0; transform: translateX(50px);}}
+        100% {{opacity: 1; transform: translateX(0);}}
+    }}
+
+    .hero {{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 70vh;
+        background: linear-gradient(90deg, #f5fdf9 0%, #ffffff 100%);
+        padding: 0 6%;
+        box-sizing: border-box;
+    }}
+    .hero-left {{
+        flex: 1;
         text-align: center;
-        padding: 3rem 1rem 2rem;
-        background: linear-gradient(180deg, #f5fdf9 0%, #ffffff 100%);
-        border-radius: 18px;
-        box-shadow: 0 4px 14px rgba(0,0,0,0.05);
-    }
-    .hero h1 {
-        color: #0f4336;
-        font-size: 2.3rem;
+        animation: slideInLeft 1s ease-out;
+    }}
+    .hero-left img {{
+        width: 420px;
+        max-width: 95%;
+    }}
+    .hero-right {{
+        flex: 1;
+        text-align: left;
+        padding-left: 3rem;
+        animation: slideInRight 1s ease-out;
+    }}
+    .hero-right h1 {{
+        font-size: 2.5rem;
         font-weight: 800;
-        margin-bottom: 0.6rem;
-    }
-    .hero p {
+        color: #0f4336;
+        margin-bottom: 1.5rem;
+        line-height: 1.3;
+    }}
+    .hero-right p {{
         font-size: 1.1rem;
         color: #374151;
-        max-width: 700px;
-        margin: 0 auto 1.5rem;
-    }
-    .badges {
-        display: flex;
-        justify-content: center;
-        gap: 0.8rem;
-        flex-wrap: wrap;
-        margin-top: 1.5rem;
-    }
-    .badge {
-        background: #e6fffa;
-        color: #065f46;
-        padding: 0.4rem 0.8rem;
-        border-radius: 999px;
-        font-size: 0.9rem;
-        font-weight: 600;
-        border: 1px solid #a7f3d0;
-    }
+        margin-bottom: 2.5rem;
+        max-width: 520px;
+        line-height: 1.6;
+    }}
+    .stButton>button {{
+        background:#047857;
+        color:#fff !important;
+        font-weight:600;
+        padding:0.9rem 1.8rem;
+        border-radius:999px;
+        border:none;
+        transition:background 0.3s,transform 0.2s;
+        font-size:1.05rem;
+        cursor:pointer;
+    }}
+    .stButton>button:hover {{
+        background:#065f46;
+        transform:translateY(-3px);
+    }}
+    .btn-wrapper {{
+        text-align: left;
+    }}
     </style>
     """, unsafe_allow_html=True)
 
-    st.markdown("""
+    # Hero HTML
+    st.markdown(f"""
     <div class="hero">
-        <h1>🌿 Projet OBSERVANCE</h1>
-        <p>
-        Une plateforme d’analyse et de visualisation des avis de l’Autorité environnementale (Ae),
-        développée à AgroParisTech dans le cadre du Certificat IODAA – Data Science & Durabilité.
-        </p>
-        <div class="badges">
-            <div class="badge">Data Science</div>
-            <div class="badge">IA & RAG</div>
-            <div class="badge">Open Data</div>
-            <div class="badge">Gouvernance environnementale</div>
+        <div class="hero-left">
+            <img src="{logo_src}" alt="Logo Observance">
+        </div>
+        <div class="hero-right">
+            <h1>Plateforme d’analyse et de visualisation<br>des avis de l’Autorité environnementale (Ae)</h1>
+            <p>Un outil numérique conçu pour explorer, comprendre et suivre la trajectoire de prise en compte des enjeux environnementaux dans les processus décisionnels.</p>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    # --- CTA buttons ---
-    st.markdown("### 🚀 Explorer les données")
-    st.markdown("Cliquez sur **📊 Explorer** dans le menu à gauche pour accéder aux visualisations interactives.")
-    st.image("assets/preview_dashboard.png", use_column_width=True)
+    # "Découvrir" button
+    _, col_right = st.columns([2, 1], gap="large")  
+    with col_right:
+        st.markdown('<div style="margin-top:-1.5rem;">', unsafe_allow_html=True) 
+        if st.button("Découvrir", key="discover-btn"):
+            st.session_state["page"] = "presentation"
+            st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
+
+# =========================================================
+# TAB 2: Dashboard
+# =========================================================
 
 
 # =========================================================
@@ -254,7 +310,7 @@ def dashboard():
     # --- Evolution of avis over time (line chart) ---
     left, right = st.columns([1.35, 1])
     with left:
-        card_open("Évolution des avis")
+        card_open("Évolution du nombre des avis")
         df_dates = run_query("""
             SELECT date_publication
             FROM files
@@ -276,8 +332,21 @@ def dashboard():
             else:
                 df_year["year"] = df_year["year"].astype(str)
                 fig_year = px.line(df_year, x="year", y="count", markers=True)
-                fig_year.update_layout(margin=dict(l=10, r=10, t=10, b=10))
-                fig_year.update_xaxes(type="category")
+                fig_year.update_traces(
+                    hovertemplate="Année: %{x}<br>Nombre d'avis: %{y}<extra></extra>"
+                )
+
+                fig_year.update_layout(
+                    margin=dict(l=10, r=10, t=10, b=10),
+                    hoverlabel=dict(font_size=14, font_family="Arial"),
+                    xaxis_title="Année",
+                    yaxis_title="Nombre d'avis",
+                )
+
+                fig_year.update_traces(text=df_year["count"], textposition="top center")
+                fig_year.update_xaxes(type="category", showgrid=False)
+                fig_year.update_yaxes(showgrid=False)
+
                 st.plotly_chart(fig_year, use_container_width=True, key="evolution_avis")
         card_close()
 
@@ -299,10 +368,20 @@ def dashboard():
                 3: "3. Assez critique à critique",
                 4: "4. Très critique",
             }
-            df_crit["avis_label"] = df_crit["avis_code"].map(labels_map).fillna("Non renseigné")
-            df_plot = df_crit.groupby("avis_label", as_index=False)["count"].sum()
+            df_crit["avis_code"] = pd.to_numeric(df_crit["avis_critique"], errors="coerce").round().astype("Int64")
+
+            labels_map = {
+                1: "1. Peu critique",
+                2: "2. Mitigé",
+                3: "3. Assez critique à critique",
+                4: "4. Très critique",
+            }
+
+            df_crit["avis_label"] = df_crit["avis_code"].map(labels_map)
+            df_plot = df_crit.dropna(subset=["avis_label"]).groupby("avis_label", as_index=False)["count"].sum()
+
             order = [
-                "1. Peu critique","2. Mitigé","3. Assez critique à critique","4. Très critique","Non renseigné"
+                "1. Peu critique", "2. Mitigé", "3. Assez critique à critique", "4. Très critique"
             ]
             df_plot["avis_label"] = pd.Categorical(df_plot["avis_label"], categories=order, ordered=True)
             df_plot = df_plot.sort_values("avis_label")
@@ -312,8 +391,7 @@ def dashboard():
                 "1. Peu critique": blues[0],
                 "2. Mitigé": blues[1],
                 "3. Assez critique à critique": blues[2],
-                "4. Très critique": blues[3],
-                "Non renseigné": "#d9d9d9",
+                "4. Très critique": blues[3]
             }
             fig_bar = px.bar(
                 df_plot, x="avis_label", y="count",
@@ -321,20 +399,55 @@ def dashboard():
             )
             fig_bar.update_traces(textposition="outside")
             fig_bar.update_layout(
+                hovermode=False,
                 xaxis_title=None, yaxis_title=None, showlegend=False,
                 bargap=0.2, margin=dict(l=10, r=10, t=10, b=10)
             )
+            fig_bar.update_xaxes(showgrid=False)
+            fig_bar.update_yaxes(showgrid=False)
+
             st.plotly_chart(fig_bar, use_container_width=True, key="bar_avis")
         card_close()
 
     # --- Top 5 critical projects ---
     card_open("Top 5 des projets critiqués")
     df_top = run_query("""
-        SELECT titre, nb_recommandations, avis_critique
+    WITH ranked AS (
+        SELECT
+            titre,
+            nb_recommandations,
+            avis_critique,
+            ROW_NUMBER() OVER (
+                PARTITION BY titre
+                ORDER BY 
+                    CAST(avis_critique AS INTEGER) DESC,
+                    nb_recommandations DESC
+            ) AS rn
         FROM projects
-        ORDER BY CAST(avis_critique AS INTEGER) DESC
-        LIMIT 5
+    )
+        SELECT 
+            titre,
+            nb_recommandations,
+            avis_critique
+        FROM ranked
+        WHERE rn = 1
+        ORDER BY 
+            CAST(avis_critique AS INTEGER) DESC,
+            nb_recommandations DESC
+        LIMIT 5;
     """)
+
+    # Reset index to start at 1
+    df_top.index = df_top.index + 1
+    df_top.index.name = "#"
+
+    # Rename columns (with bold labels)
+    df_top = df_top.rename(columns={
+        "titre": "Titre",
+        "nb_recommandations": "Nombre de recommandations",
+        "avis_critique": "Niveau critique de l'avis"
+    })
+
     st.table(df_top)
     card_close()
 
@@ -382,6 +495,16 @@ def dashboard():
             opacity=0.7,
             featureidkey="properties.id"
         )
+        fig_map.update_layout(
+            coloraxis_colorbar=dict(
+                title=dict(
+                    text="Nombre de recommandations",  
+                    font=dict(size=14)
+                ),
+                tickfont=dict(size=12)
+            ),
+        )
+
         fig_map.update_traces(marker_line_width=2, marker_line_color="black")
         fig_map.update_layout(margin={"r":0,"t":0,"l":0,"b":0}, hoverlabel=dict(font_size=14, font_family="Arial"))
         fig_map.update_geos(fitbounds="locations")
@@ -390,7 +513,7 @@ def dashboard():
     card_close()
 
 # =========================================================
-# TAB 3: Search & Analyse
+# TAB 4: Search & Analyse
 # =========================================================
 @st.cache_data
 def get_distinct(table: str, col: str, where: str = "1=1") -> list[str]:
@@ -402,6 +525,7 @@ def get_distinct(table: str, col: str, where: str = "1=1") -> list[str]:
         SELECT DISTINCT {col} AS v
         FROM {table}
         WHERE {where} AND {col} IS NOT NULL
+        ORDER BY CAST({col} AS INTEGER)
     """
     df = run_query(q)
     return df["v"].dropna().astype(str).tolist()
@@ -425,6 +549,7 @@ def pretty_critique(raw: str | None) -> str:
 def recherche_analyse():
     """Search & Analyse with persistent state and RAG."""
     st.markdown("## 🔍 Recherche & Analyse")
+    st.markdown("<p style='color:#4b5563;'>Cette section vous permet de choisir un projet, consulter ses informations clés et poser vos questions à l’IA pour une analyse contextualisée.</p>", unsafe_allow_html=True)
 
     # ---------- Load distinct values for filters ----------
     titres         = get_distinct("projects", "titre")
@@ -440,8 +565,20 @@ def recherche_analyse():
         with col2:
             date_sel = st.selectbox("Date de publication de l'avis", [""] + dates_avis, index=0)
         with col3:
-            critique_sel = st.selectbox("Niveau critique de l'avis", [""] + critiques_raw, index=0)
-
+            # Remap + trier par ordre numérique
+            labels_map = {
+                "1": "1. Peu critique",
+                "2": "2. Mitigé",
+                "3": "3. Assez critique à critique",
+                "4": "4. Très critique"
+            }
+            critiques_raw_sorted = sorted([c for c in critiques_raw if c is not None], key=lambda x: float(x))
+            critiques_labels = [labels_map.get(str(c), str(c)) for c in critiques_raw_sorted]
+            critique_sel = st.selectbox(
+                "Niveau critique de l'avis",
+                [""] + critiques_labels,
+                index=0
+            )
         keywords = st_tags(
             label="Mots-clés",
             text="Entrez un mot-clé",
@@ -640,7 +777,7 @@ def recherche_analyse():
         if not q:
             st.warning("Veuillez entrer une question.")
         else:
-            with st.spinner("Récupération & génération en cours…"):
+            with st.spinner("Traitement en cours… cela peut prendre quelques instants"):
                 try:
                     # 1) Retrieve docs (MMR on, filtered by project)
                     docs = search_docs(
@@ -649,9 +786,7 @@ def recherche_analyse():
                         project_id=selected_id,
                         use_mmr=DEFAULT_USE_MMR
                     )
-                    st.caption(f"🔎 Debug: {len(docs)} documents récupérés pour le projet #{selected_id}.")
-                    if len(docs) > 0:
-                        st.caption(f"Exemple métadonnées: {docs[0].metadata}")
+                    st.caption(f"{len(docs)} documents récupérés pour le projet #{selected_id}.")
 
                     # 2) Stream the answer
                     answer = generate_answer_stream(
@@ -672,32 +807,28 @@ def recherche_analyse():
         st.write(str(st.session_state[answer_key]))
 
 # =========================================================
-# TAB 4: Documentation
+# TAB 5: À propos
 # =========================================================
-def documentation():
-    st.markdown("## 📘 Présentation du projet OBSERVANCE")
+def a_propos():
+    st.markdown("## ℹ️ À propos")
+    st.markdown(""" **OBSERVANCE** est une plateforme d’analyse de données environnementales visant à comprendre comment les recommandations de l'**Autorité environnementale (Ae)** sont prises en compte par les maîtres d'ouvrage dans leurs projets. 
+                                                                       
+    Ce travail s'inscrit dans la continuité du projet **PEGASE** (2018-2023), financé par le programme **ITTECOP** et soutenu par le **ministère de la Transition écologique** et de l’**ADEME**. PEGASE analysait la gouvernance de l'évaluation environnementale en France à la suite de la réforme de 2016, notamment le rôle et l’influence de l’**Autorité environnementale (Ae)** et de ses **missions régionales (MRAe)**.                  
 
+    **Direction scientifique du projet PEGASE :** **Cécile Blatrix** & **Nathalie Frascaria-Lacoste**   
+
+    Pour en savoir plus sur ce projet :                            
+                                                                       
+    👉 [Rapport PEGASE – ITTECOP](https://ittecop.fr/fr/ressources/telechargements/rapport-final/rapport-ittecop-apr-2017/1391-apr-2017-pegase-rf/file) 
+                
+    👉 [Projet OBSERVANCE](https://www.canva.com/design/DAGyXlGTcrQ/U1Fswd8NBQJTfmo6HWsqPw/view?utm_content=DAGyXlGTcrQ&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h33b9461349#18) """) 
+    
+    st.markdown("---")
     st.markdown("""
-    **OBSERVANCE** est une plateforme d’analyse des avis de l’Autorité environnementale (Ae).  
-    Elle explore comment ces avis sont pris en compte dans les évaluations d’impact environnemental.
+    **👩‍💻 Développeuse :** Linh Đinh            
+    **📧 Email :** [contact@linhdinh.fr](mailto:contact@linhdinh.fr)  
+    **🔗 LinkedIn :** [Linh Đinh](https://www.linkedin.com/in/thi-thuy-linh-dinh/)
     """)
-
-    st.info("👇 Présentation complète (Canva) intégrée ci-dessous :")
-
-    # Embed Canva
-    components.iframe(
-        "https://www.canva.com/design/DAGyXlGTcrQ/view?embed",
-        height=500, width=900, scrolling=True
-    )
-    st.markdown("""
-    ---
-    **Autrice :** Linh ĐINH  
-    **Encadrement :** Cécile Blatrix & Vincent Guigue – Département SESG, AgroParisTech  
-    **Version :** 1.0
-    """)
-
-    card_close()
-
 
 # =========================================================
 # MAIN APP (Sidebar navigation with option_menu)
@@ -711,35 +842,46 @@ inject_css()
 # --- Setup data (download DB + Chroma from Seafile) ---
 conn, client = setup_data()
 
-with st.sidebar:
-    st.sidebar.image("assets/logo_observance.png", use_column_width=True)
-    st.sidebar.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("### OBSERVANCE")
-    choice = option_menu(
-        menu_title=None,
-        options=["Tableau de bord", "Recherche & Analyse", "Documentation / Aide"],
-        icons=["bar-chart", "search", "book"],
-        default_index=0,
-        orientation="vertical",
-        styles={
-            "container": {"background-color": PRIMARY, "padding": "0.5rem 0.4rem"},
-            "icon": {"color": "#e6fffa", "font-size": "18px"},
-            "nav-link": {
-                "font-weight": "600",
-                "color": "#e6fffa",
-                "border-radius": "12px",
-                "padding": "8px 12px",
-                "margin": "4px 6px",
-            },
-            "nav-link-selected": {"background-color": PRIMARY_600, "color": "#fff"},
-        },
-    )
-
 # Route content
-if choice == "Tableau de bord":
-    dashboard()
-elif choice == "Recherche & Analyse":
-    recherche_analyse()
-else:
-    documentation()
+if "page" not in st.session_state:
+    st.session_state["page"] = "home"
 
+current_page = st.session_state["page"]
+
+if current_page == "home":
+    home()
+
+else:
+    with st.sidebar:
+        st.markdown("### OBSERVANCE")
+        choice = option_menu(
+            menu_title=None,
+            options=[
+                "Tableau de bord",
+                "Recherche & Analyse",
+                "À propos"
+            ],
+            icons=["bar-chart", "search", "info-circle"],
+            default_index=0,
+            orientation="vertical",
+            styles={
+                "container": {"background-color": PRIMARY, "padding": "0.5rem 0.4rem"},
+                "icon": {"color": "#e6fffa", "font-size": "18px"},
+                "nav-link": {
+                    "font-weight": "600",
+                    "color": "#e6fffa",
+                    "border-radius": "12px",
+                    "padding": "8px 12px",
+                    "margin": "4px 6px",
+                },
+                "nav-link-selected": {"background-color": PRIMARY_600, "color": "#fff"},
+            },
+        )
+
+    # --- Routing logic
+    if choice == "Tableau de bord":
+        dashboard()
+    elif choice == "Recherche & Analyse":
+        recherche_analyse()
+    elif choice == "À propos":
+        a_propos()

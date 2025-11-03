@@ -1,4 +1,3 @@
-# scripts/rag.py
 from __future__ import annotations
 from typing import List, Optional
 import streamlit as st
@@ -9,10 +8,10 @@ import os
 from langchain_chroma import Chroma
 #from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain.schema import Document
+from langchain_core.documents import Document
+
 
 # LLM via Ollama
-import ollama
 from ollama import Client
 
 # ---------- Config ----------
@@ -20,9 +19,8 @@ BASE_DIR     = Path(__file__).resolve().parent.parent
 PERSIST_DIR  = str(BASE_DIR / "chroma_store")           
 COLLECTION   = "gouvernance"
 EMB_MODEL    = "intfloat/multilingual-e5-base"
-OLLAMA_MODEL = "llama3.2:1b"
-OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://ollama:11434")
-ollama_client = Client(host=OLLAMA_HOST)
+OLLAMA_MODEL = "llama3:latest"
+ollama_client = Client(host="http://127.0.0.1:11434")
 CTX_TOKENS   = 1024
 
 # ---------- Embeddings ----------
@@ -56,7 +54,7 @@ def search_docs(query: str, k: int = 4, project_id: Optional[int] = None,
     Filter by project_id if given.
     """
     filt = {"project_id": str(project_id)} if project_id not in (None, "", "None") else None
-    print(f"🔎 Debug: query='{query}' | where={filt}")
+    print(f"query='{query}' | where={filt}")
 
     # Embed query
     q_emb = embeddings.embed_query(query)
