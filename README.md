@@ -44,12 +44,12 @@
 
 ### Recherche et Analyse
 <p align="center">
-  <img src="images/page3.png" alt="Recherche et Analyse" width="700"/>
+  <img src="images/page3.png" alt="Recherche et Analyse" width="480"/>
 </p>
 
 ### Analyse avec RAG
 <p align="center">
-  <img src="images/page4.png" alt="RAG" width="480"/>
+  <img src="images/page4.png" alt="RAG" width="600"/>
 </p>
 
 
