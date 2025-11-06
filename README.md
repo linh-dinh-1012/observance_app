@@ -1,5 +1,4 @@
 # 🧭 OBSERVANCE  
-**Plateforme d’analyse et de visualisation# 🧭 OBSERVANCE  
 **Plateforme d’analyse et de visualisation des avis de l’Autorité environnementale (Ae)**  
 
 <p align="center">
