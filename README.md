@@ -1,4 +1,5 @@
 # 🧭 OBSERVANCE  
+![Logo](images/Observance_logo.png)
 **Plateforme d’analyse et de visualisation des avis de l’Autorité environnementale (Ae)**  
 
 [![Python](https://img.shields.io/badge/Python-3.10-blue.svg)](https://www.python.org/)
@@ -6,8 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 [![Status](https://img.shields.io/badge/Status-Active-success.svg)]()
 
-> Un outil numérique conçu pour étudier la manière dont les avis de l'**Autorité environnementale (Ae)** ont été intégrés dans le processus décisionnel, notamment à travers les **mémoires en réponse** des maîtres
-d’ouvrage.
+> Outil numérique conçu pour étudier la manière dont les avis de l'**Autorité environnementale (Ae)** sont intégrés dans le processus décisionnel, notamment à travers les **mémoires en réponse** des maîtres d’ouvrage.
 
 ---
 
@@ -15,11 +15,12 @@ d’ouvrage.
 
 | Domaine | Outils / librairies |
 |----------|---------------------|
-| Extraction & OCR | `pdfplumber`, `pytesseract`, `ocrmypdf` |
+| Extraction & OCR | `pdfplumber`, `pytesseract`, `Regex` |
 | NLP & Vectorisation | `LangChain`, `HuggingFace`, `ChromaDB`, `FTS5` |
-| LLM | `Ollama` (Mistral / LLaMA3) |
+| LLM | `Ollama` |
 | Frontend | `Streamlit`, `Plotly` |
-| Base & Infra | `SQLite`, `Docker`, `Google Cloud VM` |
+| Base de données | `SQLite`|
+| Déployement | `Docker`, `Google Cloud VM` |
 
 ---
 
@@ -27,7 +28,7 @@ d’ouvrage.
 
 - 📊 **Tableau de bord interactif** : indicateurs, cartes, statistiques.  
 - 🔍 **Recherche plein texte et sémantique** dans les avis et réponses.  
-- 💬 **Analyse avancée via RAG** : interagissez avec les documents par IA.  
+- 💬 **Analyse avancée via RAG** : analyse documentaire assistée par l'IA.  
 - 🗂️ **Exploration détaillée des projets** et métadonnées associées.
 
 ---
