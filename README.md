@@ -2,7 +2,7 @@
 **Plateforme d’analyse et de visualisation des avis de l’Autorité environnementale (Ae)**  
 
 <p align="center">
-  <img src="images/Observance_logo.png" alt="Logo OBSERVANCE" width="160"/>
+  <img src="images/Observance_logo.png" alt="Logo OBSERVANCE" width="250"/>
 </p>
 
 > Outil numérique conçu pour étudier la manière dont les avis de l'**Autorité environnementale (Ae)** sont intégrés dans le processus décisionnel, notamment à travers les **mémoires en réponse** des maîtres d’ouvrage.
@@ -44,7 +44,7 @@
 
 ### Recherche et Analyse
 <p align="center">
-  <img src="images/page3.png" alt="Recherche et Analyse" width="600"/>
+  <img src="images/page3.png" alt="Recherche et Analyse" width="700"/>
 </p>
 
 ### Analyse avec RAG
@@ -66,6 +66,5 @@ MIT — libre de réutilisation avec attribution.
 ---
 
 ## English summary  
-**OBSERVANCE** is a data-driven platform using NLP and vector databases to analyze environmental authority opinions (Ae) in France.  
+**OBSERVANCE** is a data-driven platform using NLP and vector databases to analyze environmental authority opinions (Ae) in France. 
 It provides interactive dashboards, semantic search, and RAG-powered AI analysis to support environmental governance research and decision-making.
- des avis de l’Autorité environnementale (Ae)**  
