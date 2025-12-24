@@ -26,8 +26,8 @@ def detect_device() -> str:
 device = detect_device()
 print(f"🔧 Utilisation du device: {device}")
 
-# ---------- Step 1: Load data from DB -----
-print("📂 Chargement des chunks depuis la base SQLite...")
+# Load data from DB 
+print("Chargement des chunks depuis la base SQLite...")
 conn = sqlite3.connect(DB_PATH)
 cur = conn.cursor()
 
@@ -38,9 +38,9 @@ rows = cur.execute("""
 """).fetchall()
 conn.close()
 
-print(f"➡️ {len(rows)} chunks trouvés dans la base")
+print(f"{len(rows)} chunks trouvés dans la base")
 
-# ---------- Step 2: Prepare embedding -----
+# Prepare embedding 
 # This is the embedding model
 embeddings = HuggingFaceEmbeddings(
     model_name=MODEL_NAME,
@@ -48,19 +48,19 @@ embeddings = HuggingFaceEmbeddings(
     encode_kwargs={"normalize_embeddings": True}
 )
 
-# ---------- Step 3: Open Chroma store -----
-# Persistent client ensures vectors are stored in chroma_store/
+# Open Chroma store 
+# Persistent client ensures vectors are stored in chroma_store
 client = PersistentClient(path=str(PERSIST_DIR))
 
 # Clear collection before re-indexing
 try:
     client.delete_collection(COLLECTION)
-    print(f"🗑️ Ancienne collection '{COLLECTION}' supprimée.")
+    print(f"Ancienne collection '{COLLECTION}' supprimée.")
 except Exception:
     pass
 
 client.create_collection(COLLECTION)
-print(f"📁 Nouvelle collection '{COLLECTION}' créée.")
+print(f"Nouvelle collection '{COLLECTION}' créée.")
 
 vectorstore = Chroma(
     collection_name=COLLECTION,
@@ -69,7 +69,7 @@ vectorstore = Chroma(
 )
 
 
-# ---------- Step 4: Prepare data ----------
+# Step 4: Prepare data 
 ids = []
 texts = []
 metas = []
@@ -84,8 +84,8 @@ for row in rows:
         "chunk_index": str(chunk_index)
     })
 
-# ---------- Step 5: Embedding + Indexing ----------
-print("⚙️ Début de l'embedding et de l'indexation dans Chroma...")
+# Embedding + Indexing 
+print("Début de l'embedding et de l'indexation dans Chroma...")
 
 # NOTE:
 # - Embedding = converting text -> vector (HuggingFace model)
@@ -99,5 +99,5 @@ for s in tqdm(range(0, len(texts), UPSERT_BATCH), desc="Upserting par batch"):
         ids=ids[s:e]
     )
 
-print(f"✅ Terminé. {len(texts)} chunks ajoutés à Chroma.")
-print(f"📌 Modèle = {MODEL_NAME} | Device = {device} | Collection = '{COLLECTION}'")
+print(f"Terminé. {len(texts)} chunks ajoutés à Chroma.")
+print(f"Modèle = {MODEL_NAME} | Device = {device} | Collection = '{COLLECTION}'")
