@@ -1,16 +1,16 @@
 # OBSERVANCE  
 
-## 🧭 Contexte  
+## Contexte  
 Les Autorités environnementales (Ae et MRAe) publient chaque année plusieurs milliers d’avis afin d’évaluer la prise en compte des enjeux environnementaux dans les projets, plans et programmes.  
 Bien que non contraignantes, ces recommandations constituent un **indicateur clé de la maturité environnementale** des projets, dont le suivi reste complexe à grande échelle.
 
-## ❗ Problématiques  
+## Problématiques  
 - Documents dispersés entre plusieurs sources et formats hétérogènes  
 - Analyses manuelles chronophages et peu reproductibles  
 - Difficulté à suivre la prise en compte effective des recommandations  
 - Vision limitée des dynamiques territoriales et sectorielles  
 
-## 💡 Solution  
+## Solution  
 <p align="center">
   <img src="images/Observance_logo.png" alt="Logo OBSERVANCE" width="250"/>
 </p>
@@ -22,11 +22,11 @@ Bien que non contraignantes, ces recommandations constituent un **indicateur cl�
 
 Elle permet d’identifier les tendances, d’évaluer la prise en compte des recommandations et de comparer les dynamiques entre territoires.
 
-## 📊 Résultats  
-- ⏱️ Réduction d’environ **90 % du temps d’analyse** par rapport à un traitement manuel  
-- 🔍 Suivi automatisé de la prise en compte des recommandations  
-- 📈 Visibilité immédiate sur les recommandations réellement appliquées  
-- 🧠 Support direct à la décision pour l’analyse et l’ajustement des politiques publiques  
+## Résultats  
+- Réduction d’environ **90 % du temps d’analyse** par rapport à un traitement manuel  
+- Suivi automatisé de la prise en compte des recommandations  
+- Visibilité immédiate sur les recommandations réellement appliquées  
+- Support direct à la décision pour l’analyse et l’ajustement des politiques publiques  
 
 ## Stack technique
 
