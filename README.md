@@ -16,7 +16,7 @@ Bien que non contraignantes, ces recommandations constituent un **indicateur cl�
 </p>
 
 **OBSERVANCE** est une plateforme numérique qui centralise et analyse les avis de l’Ae et les mémoires en réponse grâce à :  
-- une base de données unifiée,  
+- une base de données relationnelle,  
 - des scripts d’extraction automatisés,  
 - des techniques de NLP et un module RAG.  
 
