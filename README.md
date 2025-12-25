@@ -1,11 +1,32 @@
 # OBSERVANCE  
-**Plateforme d’analyse et de visualisation des avis de l’Autorité environnementale (Ae)**  
 
+## 🧭 Contexte  
+Les Autorités environnementales (Ae et MRAe) publient chaque année plusieurs milliers d’avis afin d’évaluer la prise en compte des enjeux environnementaux dans les projets, plans et programmes.  
+Bien que non contraignantes, ces recommandations constituent un **indicateur clé de la maturité environnementale** des projets, dont le suivi reste complexe à grande échelle.
+
+## ❗ Problématiques  
+- Documents dispersés entre plusieurs sources et formats hétérogènes  
+- Analyses manuelles chronophages et peu reproductibles  
+- Difficulté à suivre la prise en compte effective des recommandations  
+- Vision limitée des dynamiques territoriales et sectorielles  
+
+## 💡 Solution  
 <p align="center">
   <img src="images/Observance_logo.png" alt="Logo OBSERVANCE" width="250"/>
 </p>
 
-> Outil numérique conçu pour étudier la manière dont les avis de l'**Autorité environnementale (Ae)** sont intégrés dans le processus décisionnel, notamment à travers les **mémoires en réponse** des maîtres d’ouvrage.
+**OBSERVANCE** est une plateforme numérique qui centralise et analyse les avis de l’Ae et les mémoires en réponse grâce à :  
+- une base de données unifiée,  
+- des scripts d’extraction automatisés,  
+- des techniques de NLP et un module RAG.  
+
+Elle permet d’identifier les tendances, d’évaluer la prise en compte des recommandations et de comparer les dynamiques entre territoires.
+
+## 📊 Résultats  
+- ⏱️ Réduction d’environ **90 % du temps d’analyse** par rapport à un traitement manuel  
+- 🔍 Suivi automatisé de la prise en compte des recommandations  
+- 📈 Visibilité immédiate sur les recommandations réellement appliquées  
+- 🧠 Support direct à la décision pour l’analyse et l’ajustement des politiques publiques  
 
 ## Stack technique
 
@@ -18,46 +39,31 @@
 | Base de données | `SQLite` |
 | Déploiement | `Docker`, `Google Cloud VM` |
 
-## Fonctionnalités principales
-
-- **Tableau de bord interactif** : indicateurs, cartes, statistiques.  
-- **Recherche plein texte et sémantique** dans les avis et réponses.  
-- **Analyse avancée via RAG** : analyse documentaire assistée par l'IA.  
-- **Exploration détaillée des projets** et métadonnées associées.
-
 ## Captures d’écran
 
 ### Page d’accueil
 <p align="center">
-  <img src="images/page_daccueil.png" alt="Page d'accueil" width="480"/>
+  <img src="images/1.gif" alt="Page d'accueil" width="480"/>
 </p>
 
 ### Tableau de bord
 <p align="center">
-  <img src="images/page1.png" alt="Dashboard" width="480"/>
-</p>
+  <img src="images/2.gif" alt="Dashboard" width="480"/>
+</p
 
 ### Carte et projets
 <p align="center">
-  <img src="images/page2.png" alt="Carte et projets" width="480"/>
+  <img src="images/3.gif" alt="Dashboard" width="480"/>
 </p>
 
 ### Recherche et Analyse
 <p align="center">
-  <img src="images/page3.png" alt="Recherche et Analyse" width="480"/>
+  <img src="images/4.gif" alt="Dashboard" width="480"/>
 </p>
 
 ### Analyse avec RAG
 <p align="center">
-  <img src="images/page4.png" alt="RAG" width="600"/>
-</p>
-
-
-## Application accessible sur 
-<p align="center">
-  <a href="http://34.38.26.53:8501" target="_blank">
-    <img src="https://static.streamlit.io/badges/streamlit_badge_black_white.svg" alt="Open in Streamlit"/>
-  </a>
+  <img src="images/5.gif" alt="Dashboard" width="480"/>
 </p>
 
 ## Licence  
