@@ -49,7 +49,7 @@ Elle permet d’identifier les tendances, d’évaluer la prise en compte des re
 ### Tableau de bord
 <p align="center">
   <img src="images/2.gif" alt="Dashboard" width="480"/>
-</p
+</p>
 
 ### Carte et projets
 <p align="center">
