@@ -39,7 +39,7 @@ Elle permet d’identifier les tendances, d’évaluer la prise en compte des re
 | Base de données | `SQLite` |
 | Déploiement | `Docker`, `Google Cloud VM` |
 
-## Captures d’écran
+## Galerie du projet
 
 ### Page d’accueil
 <p align="center">
