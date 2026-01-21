@@ -1,0 +1,14 @@
+streamlit>=1.32
+openai>=1.12
+
+langchain>=0.1
+langchain-community>=0.0.20
+langchain-openai>=0.0.6
+
+chromadb>=0.4.22
+tiktoken
+
+pandas
+numpy
+plotly
+sqlalchemy
