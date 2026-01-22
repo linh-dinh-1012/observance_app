@@ -917,7 +917,7 @@ def a_propos():
                                                                        
     👉 [Rapport PEGASE – ITTECOP](https://ittecop.fr/fr/ressources/telechargements/rapport-final/rapport-ittecop-apr-2017/1391-apr-2017-pegase-rf/file) 
                 
-    👉 [Projet OBSERVANCE](https://www.canva.com/design/DAGyXlGTcrQ/U1Fswd8NBQJTfmo6HWsqPw/view?utm_content=DAGyXlGTcrQ&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h33b9461349#18) """) 
+    👉 [Projet OBSERVANCE](https://www.canva.com/design/DAGyXlGTcrQ/U1Fswd8NBQJTfmo6HWsqPw/view) """) 
     
     st.markdown("---")
     st.markdown("""
